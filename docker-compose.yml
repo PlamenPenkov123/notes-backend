@@ -9,8 +9,21 @@ services:
       - .env
     depends_on:
       - redis
+      - mongo
     restart: always
   redis:
     image: "redis:7-alpine"
     container_name: notes-redis
     restart: always
+  mongo:
+    image: "mongo:7.0"
+    container_name: notes-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:
