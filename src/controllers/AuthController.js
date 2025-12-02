@@ -8,14 +8,14 @@ export const register = async (req, res) => {
     try {
         const { username, email, password, passwordConfirm } = req.body;
 
-        const existing = User.findOne({ email });
+        const existing = await User.findOne({ email });
         if (existing) return res.status(400).json({ message: "Email already registered" });
 
-        if (password === passwordConfirm) return res.status(400).json({ message: "Passwords don't match" });
+        if (password !== passwordConfirm) return res.status(400).json({ message: "Passwords don't match" });
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const user = User.create({
+        const user = await User.create({
             username: username,
             email: email,
             password: hashedPassword
@@ -39,7 +39,7 @@ export const login = async (req, res) => {
         if (!matchPassword) return res.status(400).json({ message: "Invalid credentials" });
 
         const token = jwt.sign(
-            { id: user.id },
+            { id: user._id },
             process.env.JWT_SECRET,
             { expiresIn: "12h" }
         );
